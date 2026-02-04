@@ -1,0 +1,36 @@
+[mgr]
+show_hidden = false         # Press `.` to toggle; keeps view clean
+linemode = "size_and_btime" # Shows file size and modified date
+sort_by = "natural"         # Human-sort order (e.g., file2 before file10)
+sort_reverse = false
+sort_dir_first = true       # Directories grouped first
+show_symlink = true
+scrolloff = 5               # Keeps cursor away from edges when moving
+
+[preview]
+max_width = 300
+max_height = 150
+image_filter = "nearest" # Good for performance on macOS/Ghostty
+wrap = 'yes'             # Wrap long lines for text previews
+tab_size = 3
+
+[opener]
+# Define the opener for editing files with Neovim (for macOS)
+edit = [
+  { run = 'nvim "$@"', block = true, for = "unix" }, # For Unix (macOS is Unix-based)
+]
+
+# Define the default opening rules for text files
+[open]
+rules = [
+  { mime = "text/*", use = "edit" },   # Edit all text files (like .txt, .md, .json) with Neovim
+  { name = "*.json", use = "edit" },   # Optionally, edit JSON files with Neovim
+  { name = "*.md", use = "edit" },     # Optionally, edit Markdown files with Neovim
+  { name = "*.txt", use = "edit" },    # Specifically edit .txt files with Neovim
+  { name = "*.toml", use = "edit" },
+  { name = "*.config", use = "edit" },
+]
+
+
+[status]
+separator = "  " # Nice clean divider
