@@ -1,0 +1,6 @@
+reverse = true
+display-apparent-size = true
+skip-total = true
+output-format = 'si'
+number-of-lines = 50
+collapse = ['.git']

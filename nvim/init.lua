@@ -161,6 +161,9 @@ vim.o.cursorline = true
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.o.scrolloff = 10
 
+-- Always show tabline
+vim.o.showtabline = 2
+
 -- if performing an operation that would fail due to unsaved changes in the buffer (like `:q`),
 -- instead raise a dialog asking if you wish to save the current file(s)
 -- See `:help 'confirm'`
@@ -176,6 +179,9 @@ vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 -- Quitting keybinds
 vim.keymap.set('n', '<leader>q', ':wq <Return>')
 vim.keymap.set('n', '<leader>Q', ':q! <Return>')
+
+-- New tab keybind
+vim.keymap.set('n', '<C-t>', ':tabnew <Return>')
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
@@ -220,39 +226,18 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
 })
 
--- Store the job ID
-local llama_job = nil
--- Auto-start llm for in-text predictions
-vim.api.nvim_create_autocmd('VimEnter', {
-  once = true,
-  callback = function()
-    llama_job = vim.fn.jobstart({
-      'llama-server',
-      '-hf',
-      'sweepai/sweep-next-edit-1.5b',
-      '--port',
-      '8000',
-    }, {
-      detach = false, -- Keep attached so we can stop it
-      on_exit = function(_, code)
-        llama_job = nil
-      end,
-    })
-    vim.notify('Started llama-server (job: ' .. llama_job .. ')', vim.log.levels.INFO)
-  end,
-})
--- Auto-stop on nvim exit
-vim.api.nvim_create_autocmd('VimLeavePre', {
-  callback = function()
-    if llama_job and vim.fn.jobwait({ llama_job }, 0)[1] == -1 then
-      vim.fn.jobstop(llama_job)
-      vim.wait(100, function()
-        return vim.fn.jobwait({ llama_job }, 0)[1] ~= -1
-      end)
-    end
-  end,
-})
+do
+  local orig = vim.lsp.util.make_position_params
 
+  vim.lsp.util.make_position_params = function(bufnr, encoding)
+    if not encoding then
+      -- Try to infer encoding from an attached client
+      local clients = vim.lsp.get_clients { bufnr = bufnr }
+      encoding = clients[1] and clients[1].offset_encoding or 'utf-16'
+    end
+    return orig(bufnr, encoding)
+  end
+end
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
@@ -824,43 +809,6 @@ require('lazy').setup({
   -- Highlight todo, notes, etc in comments
   { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
 
-  { -- Collection of various small independent plugins/modules
-    'echasnovski/mini.nvim',
-    config = function()
-      -- Better Around/Inside textobjects
-      --
-      -- Examples:
-      --  - va)  - [V]isually select [A]round [)]paren
-      --  - yinq - [Y]ank [I]nside [N]ext [Q]uote
-      --  - ci'  - [C]hange [I]nside [']quote
-      require('mini.ai').setup { n_lines = 500 }
-
-      -- Add/delete/replace surroundings (brackets, quotes, etc.)
-      --
-      -- - saiw) - [S]urround [A]dd [I]nner [W]ord [)]Paren
-      -- - sd'   - [S]urround [D]elete [']quotes
-      -- - sr)'  - [S]urround [R]eplace [)] [']
-      require('mini.surround').setup()
-
-      -- Simple and easy statusline.
-      --  You could remove this setup call if you don't like it,
-      --  and try some other statusline plugin
-      local statusline = require 'mini.statusline'
-      -- set use_icons to true if you have a Nerd Font
-      statusline.setup { use_icons = vim.g.have_nerd_font }
-
-      -- You can configure sections in the statusline by overriding their
-      -- default behavior. For example, here we set the section for
-      -- cursor location to LINE:COLUMN
-      ---@diagnostic disable-next-line: duplicate-set-field
-      statusline.section_location = function()
-        return '%2l:%-2v'
-      end
-
-      -- ... and there is more!
-      --  Check out: https://github.com/echasnovski/mini.nvim
-    end,
-  },
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
@@ -896,11 +844,6 @@ require('lazy').setup({
   --  Here are some example plugins that I've included in the Kickstart repository.
   --  Uncomment any of the lines below to enable them (you will need to restart nvim).
   --
-  -- require 'kickstart.plugins.debug',
-  require 'kickstart.plugins.indent_line',
-  require 'kickstart.plugins.lint',
-  require 'kickstart.plugins.autopairs',
-  -- require 'kickstart.plugins.neo-tree',
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
   --    This is the easiest way to modularize your config.
