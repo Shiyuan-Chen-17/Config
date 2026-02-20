@@ -6,5 +6,6 @@ return {
     },
     treesitter = true,
     context = 40,
+    exclude = { 'python' },
   },
 }
