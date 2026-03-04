@@ -1,0 +1,27 @@
+
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+#
+# On branch main
+# Your branch is up to date with 'origin/main'.
+#
+# Changes to be committed:
+#	new file:   clock-rs/conf.toml
+#	deleted:    gotop/gotop.conf
+#	new file:   nvim/backup/%Users%martinchen%.config%clock-rs%conf.toml~
+#	new file:   nvim/backup/%Users%martinchen%.zshrc~
+#	modified:   nvim/init.lua
+#	modified:   nvim/lazy-lock.json
+#	new file:   nvim/lua/custom/plugins/wrapped.lua
+#	new file:   nvim/undo/%Users%martinchen%.config%clock-rs%conf.toml
+#	new file:   nvim/undo/%Users%martinchen%.config%nvim%init.lua
+#	new file:   nvim/undo/%Users%martinchen%.zshrc
+#
+# Untracked files:
+#	linearmouse/
+#	mole/
+#	nanobot/config.json
+#	nvim/backup/%Users%martinchen%.config%nanobot%config.json~
+#	raycast/
+#	uv/
+#
