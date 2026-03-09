@@ -4,6 +4,15 @@
 # Source zsh profile to get proper environment and aliases
 source ~/.zshrc
 
+# Define a path to reduce errors
+export TERM=xterm-256color
+
+# Check for internet before trying to update
+if ! ping -c 1 google.com &> /dev/null; then
+    echo "$(date): No internet connection. Skipping update."
+    exit 0
+fi
+
 # oh-my-zsh update
 echo "[$(date)] Starting oh-my-zsh update..."
 omz update
@@ -20,3 +29,4 @@ echo "[$(date)] Running Homebrew cleanup..."
 brew cleanup -s --prune=all
 
 echo "[$(date)] OMZ and Brew updated"
+
