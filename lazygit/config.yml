@@ -91,43 +91,43 @@ gui:
   theme:
     # Border color of focused window
     activeBorderColor:
-      - green
+      - '#88C0D0' # nord8 - cyan, matches TabbyCurrent/TabbyTail accent
       - bold
     # Border color of non-focused windows
     inactiveBorderColor:
-      - default
+      - '#4C566A' # nord3 - muted dark
     # Border color of focused window when searching in that window
     searchingActiveBorderColor:
-      - cyan
+      - '#81A1C1' # nord9 - blue, matches TabbyHead
       - bold
     # Color of keybindings help text in the bottom line
     optionsTextColor:
-      - blue
+      - '#81A1C1' # nord9 - blue
     # Background color of selected line.
     # See https://github.com/jesseduffield/lazygit/blob/master/docs/Config.md#highlighting-the-selected-line
     selectedLineBgColor:
-      - blue
+      - '#3B4252' # nord1 - matches TabbyTab bg
     # Background color of selected line when view doesn't have focus.
     inactiveViewSelectedLineBgColor:
-      - bold
+      - '#2E3440' # nord0 - darkest, subtle
     # Foreground color of copied commit
     cherryPickedCommitFgColor:
-      - blue
+      - '#88C0D0' # nord8 - cyan
     # Background color of copied commit
     cherryPickedCommitBgColor:
-      - cyan
+      - '#434C5E' # nord2 - matches TabbyWin bg
     # Foreground color of marked base commit (for rebase)
     markedBaseCommitFgColor:
-      - blue
+      - '#D8DEE9' # nord4 - matches TabbyFill fg
     # Background color of marked base commit (for rebase)
     markedBaseCommitBgColor:
-      - yellow
+      - '#434C5E' # nord2
     # Color for file with unstaged changes
     unstagedChangesColor:
-      - red
+      - '#BF616A' # nord11 - red
     # Default text color
     defaultFgColor:
-      - default
+      - '#D8DEE9' # nord4 - matches TabbyFill fg
   # Config relating to the commit length indicator
   commitLength:
     # If true, show an indicator of commit message length
@@ -219,29 +219,6 @@ gui:
   switchTabsWithPanelJumpKeys: false
 # Config relating to git
 git:
-  # Array of pagers. Each entry has the following format:
-  #
-  #   # Value of the --color arg in the git diff command. Some pagers want
-  #   # this to be set to 'always' and some want it set to 'never'
-  #   colorArg: "always"
-  #
-  #   # e.g.
-  #   # diff-so-fancy
-  #   # delta --dark --paging=never
-  #   # ydiff -p cat -s --wrap --width={{columnWidth}}
-  #   pager: ""
-  #
-  #   # e.g. 'difft --color=always'
-  #   externalDiffCommand: ""
-  #
-  #   # If true, Lazygit will use git's `diff.external` config for paging.
-  #   # The advantage over `externalDiffCommand` is that this can be
-  #   # configured per file type in .gitattributes; see
-  #   # https://git-scm.com/docs/gitattributes#_defining_an_external_diff_driver.
-  #   useExternalDiffGitConfig: false
-  #
-  # See https://github.com/jesseduffield/lazygit/blob/master/docs/Custom_Pagers.md
-  # for more information.
   pagers: []
   # Config relating to committing
   commit:
@@ -318,30 +295,18 @@ git:
   # Config for showing the log in the commits view
   log:
     # One of: 'date-order' | 'author-date-order' | 'topo-order' | 'default'
-    # 'topo-order' makes it easier to read the git log graph, but commits may not
-    # appear chronologically. See https://git-scm.com/docs/
-    #
-    # Can be changed from within Lazygit with `Log menu -> Commit sort order`
-    # (`<c-l>` in the commits window by default).
     order: topo-order
     # This determines whether the git graph is rendered in the commits panel
     # One of 'always' | 'never' | 'when-maximised'
-    #
-    # Can be toggled from within lazygit with `Log menu -> Show git graph` (`<c-l>`
-    # in the commits window by default).
     showGraph: always
     # displays the whole git graph by default in the commits view (equivalent to
     # passing the `--all` argument to `git log`)
     showWholeGraph: true
   # How branches are sorted in the local branches view.
   # One of: 'date' (default) | 'recency' | 'alphabetical'
-  # Can be changed from within Lazygit with the Sort Order menu (`s`) in the
-  # branches panel.
   localBranchSortOrder: date
   # How branches are sorted in the remote branches view.
   # One of: 'date' (default) | 'alphabetical'
-  # Can be changed from within Lazygit with the Sort Order menu (`s`) in the
-  # remote branches panel.
   remoteBranchSortOrder: date
   # When copying commit hashes to the clipboard, truncate them to this length. Set
   # to 40 to disable truncation.
@@ -368,36 +333,16 @@ quitOnTopLevelReturn: false
 # Config relating to things outside of Lazygit like how files are opened,
 # copying to clipboard, etc
 os:
-  # Command for editing a file. Should contain "{{filename}}".
   edit: ""
-  # Command for editing a file at a given line number. Should contain
-  # "{{filename}}", and may optionally contain "{{line}}".
   editAtLine: ""
-  # Same as EditAtLine, except that the command needs to wait until the window is
-  # closed.
   editAtLineAndWait: ""
-  # Whether lazygit suspends until an edit process returns
   editInTerminal: false
-  # For opening a directory in an editor
   openDirInEditor: ""
-  # A built-in preset that sets all of the above settings. Supported presets are
-  # defined in the getPreset function in editor_presets.go.
   editPreset: ""
-  # Command for opening a file, as if the file is double-clicked. Should contain
-  # "{{filename}}", but doesn't support "{{line}}".
   open: ""
-  # Command for opening a link. Should contain "{{link}}".
   openLink: ""
-  # CopyToClipboardCmd is the command for copying to clipboard.
-  # See https://github.com/jesseduffield/lazygit/blob/master/docs/Config.md#custom-command-for-copying-to-and-pasting-from-clipboard
   copyToClipboardCmd: ""
-  # ReadFromClipboardCmd is the command for reading the clipboard.
-  # See https://github.com/jesseduffield/lazygit/blob/master/docs/Config.md#custom-command-for-copying-to-and-pasting-from-clipboard
   readFromClipboardCmd: ""
-  # A shell startup file containing shell aliases or shell functions. This will be
-  # sourced before running any shell commands, so that shell functions are
-  # available in the `:` command prompt or even in custom commands.
-  # See https://github.com/jesseduffield/lazygit/blob/master/docs/Config.md#using-aliases-or-functions-in-shell-commands
   shellFunctionsFile: ""
 # If true, don't display introductory popups upon opening Lazygit.
 disableStartupPopups: false
@@ -433,7 +378,7 @@ keybinding:
     nextPage: .
     scrollLeft: H
     scrollRight: L
-    gotoTop: <
+    gotoTop: <disabled>
     gotoBottom: '>'
     gotoTop-alt: <home>
     gotoBottom-alt: <end>
