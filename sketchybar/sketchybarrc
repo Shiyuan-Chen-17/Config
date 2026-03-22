@@ -19,7 +19,6 @@ sketchybar --set "$NAME" \
 	label.align=center \
 	width=35
 SCRIPT
-
 cat >/tmp/sketchybar-plugins/volume.sh <<'SCRIPT'
 #!/bin/bash
 VOL=$(osascript -e "output volume of (get volume settings)")
@@ -33,7 +32,6 @@ else
 fi
 sketchybar --set "$NAME" icon="$ICON"
 SCRIPT
-
 cat >/tmp/sketchybar-plugins/volume_click.sh <<'SCRIPT'
 #!/bin/bash
 MUTED=$(osascript -e "output muted of (get volume settings)")
@@ -44,12 +42,10 @@ else
 fi
 bash /tmp/sketchybar-plugins/volume.sh
 SCRIPT
-
 cat >/tmp/sketchybar-plugins/sleep.sh <<'SCRIPT'
 #!/bin/bash
 osascript -e 'tell application "System Events" to sleep'
 SCRIPT
-
 cat >/tmp/sketchybar-plugins/restart.sh <<'SCRIPT'
 #!/bin/bash
 osascript <<EOF
@@ -60,7 +56,6 @@ tell application "System Events"
 end tell
 EOF
 SCRIPT
-
 cat >/tmp/sketchybar-plugins/shutdown.sh <<'SCRIPT'
 #!/bin/bash
 osascript <<EOF
@@ -71,7 +66,6 @@ tell application "System Events"
 end tell
 EOF
 SCRIPT
-
 cat >/tmp/sketchybar-plugins/sleep_click.sh <<'SCRIPT'
 #!/bin/bash
 osascript <<EOF
@@ -82,7 +76,6 @@ tell application "System Events"
 end tell
 EOF
 SCRIPT
-
 cat >/tmp/sketchybar-plugins/battery.sh <<'SCRIPT'
 #!/bin/bash
 PCT=$(pmset -g batt | grep -Eo "\d+%" | cut -d% -f1)
@@ -105,9 +98,7 @@ else
 fi
 sketchybar --set "$NAME" icon="$ICON" icon.color="$COLOR"
 SCRIPT
-
 chmod +x /tmp/sketchybar-plugins/*.sh
-
 # ─── Bar ──────────────────────────────────────────────
 sketchybar --bar \
 	position=left \
@@ -169,7 +160,7 @@ sketchybar \
 	padding_left=6 \
 	padding_right=4 \
 	label.color="$OX_BORDER" \
-	label="$(date '+%a')"
+	script="sketchybar --set \$NAME label=\"\$(date '+%a')\""
 sketchybar \
 	--add item date left \
 	--set date \
@@ -178,8 +169,8 @@ sketchybar \
 	padding_right=6 \
 	label.font="Source Code Pro:Regular:14.0" \
 	label.color="$OX_ORG" \
-	label="$(date '+%d' | sed 's/^0//')" \
-	width=18
+	width=18 \
+	script="sketchybar --set \$NAME label=\"\$(date '+%d' | sed 's/^0//')\""
 sketchybar \
 	--add item month left \
 	--set month \
@@ -187,7 +178,7 @@ sketchybar \
 	padding_left=8 \
 	padding_right=6 \
 	label.color="$OX_BORDER" \
-	label="$(date '+%b')"
+	script="sketchybar --set \$NAME label=\"\$(date '+%b')\""
 sb_separator left
 # ─── Space ────────────────────────────────────────────
 sketchybar \
@@ -244,7 +235,6 @@ sketchybar \
 	width=24 \
 	click_script="/tmp/sketchybar-plugins/sleep_click.sh"
 sb_separator right 2 8
-
 # ─── Battery ──────────────────────────────────────────
 sketchybar \
 	--add item battery right \
@@ -258,7 +248,6 @@ sketchybar \
 	width=30 \
 	script="/tmp/sketchybar-plugins/battery.sh" \
 	--subscribe battery power_source_change system_woke
-
 # ─── Volume ───────────────────────────────────────────
 sketchybar \
 	--add item volume right \
@@ -274,8 +263,6 @@ sketchybar \
 	script="/tmp/sketchybar-plugins/volume.sh" \
 	click_script="/tmp/sketchybar-plugins/volume_click.sh" \
 	--subscribe volume volume_change
-
 sb_separator right 0 0
-
 # ─── Force initial run ────────────────────────────────
 sketchybar --update
