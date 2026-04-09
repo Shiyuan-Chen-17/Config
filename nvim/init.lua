@@ -353,7 +353,7 @@ require('lazy').setup({
     config = function()
       require('gitsigns').setup {
         numhl = true,
-        word_diff = true,
+        word_diff = false,
         current_line_blame = true,
         current_line_blame_opts = {
           virtual_text = true,
