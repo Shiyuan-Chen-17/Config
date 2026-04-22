@@ -65,3 +65,4 @@ alt - e : yabai -m window --toggle split
 
 # Open common applications
 lalt + shift + lctrl - c : osascript -e 'tell application "Google Chrome" to make new window'
+lalt + shift + lctrl - f : osascript -e 'tell application "Finder" to make new Finder window'
