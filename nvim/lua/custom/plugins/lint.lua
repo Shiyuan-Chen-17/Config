@@ -5,6 +5,12 @@ return {
     event = { 'BufReadPre', 'BufNewFile' },
     config = function()
       local lint = require 'lint'
+      lint.linters.markdownlint.args = vim.list_extend(lint.linters.markdownlint.args or {}, {
+        '--disable',
+        'MD013',
+        '--disable',
+        'MD026',
+      })
       lint.linters_by_ft = {
         markdown = { 'markdownlint' },
       }
