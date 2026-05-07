@@ -1,22 +1,67 @@
 return {
   'nanozuki/tabby.nvim',
-  lazy = false, -- important: tabline plugins should not be lazy
+  lazy = false,
   priority = 1000,
+
   config = function()
-    -- Ensure truecolor
     vim.opt.termguicolors = true
 
-    -- Define nord-based highlights (independent of colorscheme)
+    local function get_hl(name)
+      return vim.api.nvim_get_hl(0, { name = name })
+    end
+
     local function set_hl(name, opts)
       vim.api.nvim_set_hl(0, name, opts)
     end
 
-    set_hl('TabbyFill', { fg = '#D8DEE9', bg = '#14161B' })
-    set_hl('TabbyHead', { fg = '#2E3440', bg = '#81A1C1', bold = true })
-    set_hl('TabbyCurrent', { fg = '#434C5D', bg = '#88C0D0', bold = true })
-    set_hl('TabbyTab', { fg = '#D8DEE9', bg = '#3B4252' })
-    set_hl('TabbyWin', { fg = '#E5E9F0', bg = '#434C5E' })
-    set_hl('TabbyTail', { fg = '#2E3440', bg = '#88C0D0', bold = true })
+    local function setup_tabby_highlights()
+      local normal = get_hl 'Normal'
+      local tabline = get_hl 'TabLine'
+      local tabline_sel = get_hl 'TabLineSel'
+      local tabline_fill = get_hl 'TabLineFill'
+      local statusline = get_hl 'StatusLine'
+
+      set_hl('TabbyFill', {
+        fg = tabline_fill.fg,
+        bg = tabline_fill.bg,
+      })
+
+      set_hl('TabbyHead', {
+        fg = normal.bg,
+        bg = tabline.fg,
+        bold = true,
+      })
+
+      set_hl('TabbyCurrent', {
+        fg = tabline_sel.fg,
+        bg = tabline_sel.bg,
+        bold = true,
+      })
+
+      set_hl('TabbyTab', {
+        fg = tabline.fg,
+        bg = tabline.bg,
+      })
+
+      set_hl('TabbyWin', {
+        fg = statusline.fg,
+        bg = statusline.bg,
+      })
+
+      set_hl('TabbyTail', {
+        fg = normal.bg,
+        bg = tabline_sel.bg,
+        bold = true,
+      })
+    end
+
+    -- Apply immediately
+    setup_tabby_highlights()
+
+    -- Reapply after changing colorscheme
+    vim.api.nvim_create_autocmd('ColorScheme', {
+      callback = setup_tabby_highlights,
+    })
 
     require('tabby').setup {
       line = function(line)
@@ -28,11 +73,15 @@ return {
 
           line.tabs().foreach(function(tab)
             local hl = tab.is_current() and 'TabbyCurrent' or 'TabbyTab'
+
             return {
               line.sep('', hl, 'TabbyFill'),
               tab.is_current() and '' or '󰆣',
+              ' ',
               tab.number(),
+              ':',
               tab.name(),
+              ' ',
               tab.close_btn '',
               line.sep('', hl, 'TabbyFill'),
               hl = hl,
@@ -46,7 +95,9 @@ return {
             return {
               line.sep('', 'TabbyWin', 'TabbyFill'),
               win.is_current() and '' or '',
+              ' ',
               win.buf_name(),
+              ' ',
               line.sep('', 'TabbyWin', 'TabbyFill'),
               hl = 'TabbyWin',
               margin = ' ',
