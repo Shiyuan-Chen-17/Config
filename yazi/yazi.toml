@@ -24,11 +24,11 @@ edit = [
 [open]
 rules = [
   { mime = "text/*", use = "edit" },   # Edit all text files (like .txt, .md, .json) with Neovim
-  { name = "*.json", use = "edit" },   # Optionally, edit JSON files with Neovim
-  { name = "*.md", use = "edit" },     # Optionally, edit Markdown files with Neovim
-  { name = "*.txt", use = "edit" },    # Specifically edit .txt files with Neovim
-  { name = "*.toml", use = "edit" },
-  { name = "*.config", use = "edit" },
+  { mime = "*.json", use = "edit" },   # Optionally, edit JSON files with Neovim
+  { mime = "*.md", use = "edit" },     # Optionally, edit Markdown files with Neovim
+  { mime = "*.txt", use = "edit" },    # Specifically edit .txt files with Neovim
+  { mime = "*.toml", use = "edit" },
+  { mime = "*.config", use = "edit" },
 ]
 
 

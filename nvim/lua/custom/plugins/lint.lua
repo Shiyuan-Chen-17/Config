@@ -10,6 +10,8 @@ return {
         'MD013',
         '--disable',
         'MD026',
+        '--disable',
+        'MD004',
       })
       lint.linters_by_ft = {
         markdown = { 'markdownlint' },

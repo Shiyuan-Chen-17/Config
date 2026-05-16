@@ -129,6 +129,13 @@ vim.opt.foldlevel = 99
 vim.opt.foldlevelstart = 99
 vim.opt.foldcolumn = '1'
 
+-- Conceal level
+vim.opt.conceallevel = 2
+vim.opt.concealcursor = 'nc'
+
+-- Colourscheme
+vim.cmd 'colorscheme retrobox'
+
 -- Unmap all built-in z commands (use raw API to avoid vim.keymap.del E31 error)
 for _, key in ipairs {
   'za',
@@ -350,8 +357,8 @@ require('lazy').setup({
   -- If you prefer to call `setup` explicitly, use:
   {
     'lewis6991/gitsigns.nvim',
-    config = function()
-      require('gitsigns').setup {
+    config = function(_, opts)
+      local gitsigns_defaults = {
         numhl = true,
         word_diff = false,
         current_line_blame = true,
@@ -361,6 +368,195 @@ require('lazy').setup({
           delay = 1000,
         },
       }
+      require('gitsigns').setup(vim.tbl_deep_extend('force', gitsigns_defaults, opts or {}))
+
+      local function hl(name)
+        return vim.api.nvim_get_hl(0, { name = name, link = false })
+      end
+
+      local function set(name, value)
+        vim.api.nvim_set_hl(0, name, value)
+      end
+
+      local function get_fg(group, fallback)
+        local ok, value = pcall(hl, group)
+
+        if ok and value then
+          local fg = value.fg or value.foreground
+          if fg then
+            if type(fg) == 'number' then
+              return string.format('#%06x', fg)
+            else
+              return fg
+            end
+          end
+        end
+
+        return fallback
+      end
+
+      local function get_bg(group, fallback)
+        local ok, value = pcall(hl, group)
+
+        if ok and value then
+          local bg = value.bg or value.background
+          if bg then
+            if type(bg) == 'number' then
+              return string.format('#%06x', bg)
+            else
+              return bg
+            end
+          end
+        end
+
+        return fallback
+      end
+
+      local function apply_gitsigns_colors()
+        -- Pull colors directly from your colorscheme
+        local add_fg = get_fg('DiffAdd', '#98c379')
+        local change_fg = get_fg('DiffChange', '#e5c07b')
+        local delete_fg = get_fg('DiffDelete', '#e06c75')
+
+        local add_bg = get_bg('DiffAdd', 'NONE')
+        local change_bg = get_bg('DiffChange', 'NONE')
+        local delete_bg = get_bg('DiffDelete', 'NONE')
+
+        local comment_fg = get_fg('Comment', '#7f848e')
+        local normal_fg = get_fg('Normal', '#000000')
+
+        -- Main signs
+        set('GitSignsAdd', {
+          fg = add_fg,
+          bg = 'NONE',
+        })
+
+        set('GitSignsChange', {
+          fg = change_fg,
+          bg = 'NONE',
+        })
+
+        set('GitSignsDelete', {
+          fg = delete_fg,
+          bg = 'NONE',
+        })
+
+        set('GitSignsTopdelete', {
+          fg = delete_fg,
+          bg = 'NONE',
+        })
+
+        set('GitSignsChangedelete', {
+          fg = change_fg,
+          bg = 'NONE',
+        })
+
+        set('GitSignsUntracked', {
+          fg = add_fg,
+          bg = 'NONE',
+        })
+
+        -- Number highlights
+        set('GitSignsAddNr', {
+          fg = add_fg,
+        })
+
+        set('GitSignsChangeNr', {
+          fg = change_fg,
+        })
+
+        set('GitSignsDeleteNr', {
+          fg = delete_fg,
+        })
+
+        -- Line highlights
+        set('GitSignsAddLn', {
+          bg = add_bg,
+        })
+
+        set('GitSignsChangeLn', {
+          bg = change_bg,
+        })
+
+        set('GitSignsDeleteLn', {
+          bg = delete_bg,
+        })
+
+        -- Cursorline highlights
+        set('GitSignsAddCul', {
+          fg = add_fg,
+        })
+
+        set('GitSignsChangeCul', {
+          fg = change_fg,
+        })
+
+        set('GitSignsDeleteCul', {
+          fg = delete_fg,
+        })
+
+        -- Inline word diff
+        set('GitSignsAddInline', {
+          bg = add_fg,
+          fg = normal_fg,
+        })
+
+        set('GitSignsChangeInline', {
+          bg = change_fg,
+          fg = normal_fg,
+        })
+
+        set('GitSignsDeleteInline', {
+          bg = delete_fg,
+          fg = normal_fg,
+        })
+
+        set('GitSignsAddLnInline', {
+          bg = add_bg,
+          fg = add_fg,
+        })
+
+        set('GitSignsChangeLnInline', {
+          bg = change_bg,
+          fg = change_fg,
+        })
+
+        set('GitSignsDeleteLnInline', {
+          bg = delete_bg,
+          fg = delete_fg,
+        })
+
+        -- Blame text
+        set('GitSignsCurrentLineBlame', {
+          fg = comment_fg,
+          italic = true,
+        })
+
+        -- Preview windows
+        set('GitSignsAddPreview', {
+          link = 'DiffAdd',
+        })
+
+        set('GitSignsDeletePreview', {
+          link = 'DiffDelete',
+        })
+
+        set('GitSignsDeleteVirtLn', {
+          link = 'DiffDelete',
+        })
+
+        set('GitSignsVirtLnum', {
+          fg = comment_fg,
+        })
+      end
+
+      -- Apply now
+      apply_gitsigns_colors()
+
+      -- Reapply after every :colorscheme
+      vim.api.nvim_create_autocmd('ColorScheme', {
+        callback = apply_gitsigns_colors,
+      })
     end,
   },
   --
@@ -388,7 +584,6 @@ require('lazy').setup({
     event = 'VimEnter', -- Sets the loading event to 'VimEnter'
     opts = {
       -- delay between pressing a key and opening which-key (milliseconds)
-      -- this setting is independent of vim.o.timeoutlen
       delay = 0,
       icons = {
         -- set icon mappings to true if you have a Nerd Font
